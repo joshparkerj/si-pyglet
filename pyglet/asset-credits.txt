@@ -1,0 +1,21 @@
+Asset credits:
+
+Player Ship from here:
+https://opengameart.org/content/shmup-ships
+
+Aliens from here:
+https://opengameart.org/content/alien-spaceship-sprite-pack
+
+Background from here:
+https://opengameart.org/content/space-parallax-background
+
+Bullet original ;)
+
+Sound effects from here:
+https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc
+
+Fly music track from here:
+https://opengameart.org/content/techno-space
+
+Space music track from here:
+https://opengameart.org/content/space-music-out-there
