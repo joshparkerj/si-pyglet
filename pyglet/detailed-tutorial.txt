@@ -1,0 +1,153 @@
+LESSON PLAN
+
+Title: Creating a game with Python and the pyglet library.
+
+Purpose: This lesson will demonstrate how to use the pyglet library to easily add images and sound to a Python program, as well as creating a game by using keyboard inputs to control a player sprite.
+
+Audience: This lesson is intended for third year UVU Prep students in the computer science class. Students are assumed to already be familiar with Scratch and to have learned some of the basics of Python programming. This lesson would probably work best after students have already worked with Python's turtle library. Specifically, I think this lesson could be a good alternative to the tkinter flow-chart lesson from UVU Prep 2018.
+
+Set-up: This lesson requires the pyglet library. This library is available through pip, so if pip is installed, then pyglet can be installed by running the command "pip install pyglet" at the command line. If that doesn't work, the library can also easily be used by downloading it from ......................
+
+Resources: A simple, completed game can be found at ........................ All of the game assets were obtained from opengameart and edited using Gimp for the graphics and Audacity for the sounds. 
+
+Tutorial: Since we are using the pyglet library we will need to import it at the top of our file:
+ 
+import pyglet
+
+For my game, I also wanted to use random decimal numbers and random integers, so I imported those functions from the random library:
+
+from random import random
+from random import randint
+
+Next, I set up two global variables to keep track of important information. The first tracks the player's score. The second tracks whether the game is still going or not:
+
+playerScore = 0
+gameOn = True
+
+Okay! Now that some easy stuff is out of the way, let's start using the pyglet library. The first thing I did was open a square window 500 pixels wide by 500 pixels tall (because that's the size of my background image). To use parts of the pyglet library, we will type pyglet.something.somethingelse. Detailed nformation about what those somethings and somethingelses can be is found at pyglet.readthedocs.io:
+
+window = pyglet.window.Window(500,500)
+
+Next, I set up a variable for a graphics batch. In Pyglet, we are supposed to assign all of the sprites that we want drawn on the screen at once to the same graphics batch:
+
+batchDraw = pyglet.graphics.Batch()
+
+The next task is setting variables for graphics ordered groups. It's important that we draw background graphics before foreground graphics, otherwise the background might end up covering the foreground, and we wouldn't be able to see it! Since my game has very simple graphics, I only need two ordered groups: one for the background, and one for everything else:
+
+bgroup = pyglet.graphics.OrderedGroup(0)
+fgroup = pyglet.graphics.OrderedGroup(1)
+
+Now I'm going to load the images that I want my game to use. Before I start loading them, I'm going to create an alias for the pyglet command that I'll be using. This saves on typing, and that's a good thing because the less we have to type, the smaller the chance that we'll misspell something:
+
+img = pyglet.resource.image
+
+From now on, anytime I use the variable "img", it will work exactly the same as if I had typed "pyglet.resource.image". Next, I'm going to use this shortened command to load the images for the player's spaceship, the background, and the bullets that the player will fire:
+
+playerImage = img('player.png')
+spaceImage = img('space.png')
+bulletImage = img('bullet.png')
+
+I need to make sure that all of those image files are in the exact same folder as the python file that I'm making. Next, my game will need some aliens for the player to shoot. I don't want all of the aliens to look the same, so I will load five different alien images. In my game, I call the aliens "bads" for short. I'm going to add all five bad images to one list:
+
+badImages = [img('bad1.png'),img('bad2.png'),img('bad3.png'),img('bad4.png'),img('bad5.png'),]
+
+As you can see, in Python we use square brackets to mark the beginning and end of a list, and we use commas to separate the items in a list. I've finished adding all of the graphics I want to use in my game! Next, I'm going to add two sound effects and a music file. Once again, I will use an alias to save myself some typing:
+
+med = pyglet.resource.media
+
+I have one sound effect for firing bullets, and one sound effect for destroying bads. Since these sound effects will be played over and over in my game, I need to make sure their streaming property is set to false:
+
+zapSound = med('zap.wav', streaming=False)
+blastSound = med('blast.wav', streaming=False)
+
+In pyglet, the default streaming property for media objects is True. So, when I create my music variable, I don't need to specify the streaming property:
+
+spaceMusic = med('space.wav')
+
+The next thing I want to do is show the player's score. To do this, I'll want to create a pyglet text label:
+
+scoreLabel = pyglet.text.Label(text="Score: " + str(playerScore), x = 5, y = 485, batch = batchDraw, group = fgroup)
+
+Let's break down what I did there. I created a variable called "scoreLabel" which contains a pyglet text label with five properties. I assigned the "text" property to say "Score: " followed by the playerScore converted to a string using the str function. Next, the "x" and "y" properties are set to the location where I want the label to go. (The upper left-hand corner of the window). The last two properties indicate that it should be drawn whenever my batchDraw batch is drawn, and since it's in the fgroup it should be drawn after the background.
+
+With that out of the way, let's look at how we're gonna play the background music. To do this, I'm going to create a "musicPlayer" variable that contains a pyglet media player, and I'm going to add my "spaceMusic" media resource to its queue:
+
+musicPlayer = pyglet.media.Player()
+musicPlayer.queue(spaceMusic)
+
+One of the most important things a game needs that we haven't addressed yet is input from the player. For this simple game, the only input I want to use is from the keyboard. In order to accept keyboard input, I'm going to assign a variable to pyglet's list of keyboard symbols:
+
+kb = pyglet.window.key
+
+I can use this variable to check for keyboard inputs. For example, the "W" key on the keyboard corresponds to kb.W, "S" is kb.S, and "F" is kb.F. Fairly simple. 
+
+Next, I'm going to create a couple of the actual sprites that the game needs to draw to the window. I want to use one last alias for the sprite creation command:
+
+Spr = pyglet.sprite.Sprite
+
+The first sprite I want is for the background:
+
+background = Spr(img=spaceImage, x=0, y=0, batch=batchDraw, group=bgroup)
+
+This sprite has very similar properties to the label I created earlier. Instead of text, it has one of the images I loaded earlier. The x and y properties place it in the bottom left corner of the window. (Since it's the same size as the window, this makes it fill the whole thing.) The group is bgroup instead of fgroup because I want to draw the background before anything else. (Otherwise it would cover things.)
+
+Before I create the player sprite, I want to make one adjustment to the player ship image. All images in pyglet have their origin point at the bottom left corner by default. This origin point is referred to as the "anchor". It's the same thing as the costume center in Scratch. For my player ship, I'd like to move the anchor up to the center. This will make it easier to fire bullets from the center of the ship, and that looks better than shooting from the corner. While I'm at it, I'll do the same thing to the bulletImage so that they line up perfectly:
+
+playerImage.anchor_y = playerImage.height // 2
+bulletImage.anchor_y = bulletImage.height // 2
+
+In this line of Python code, "anchor_y" and "height" are both properties of the playerImage. Pyglet created these properties automatically when we first loaded the image. I divided the playerImage height by 2 in order to get the middle point. Now I'm ready to create the playerSprite:
+
+playerSprite = Spr(img=playerImage, x=0, y=250, batch = batchDraw, group = fgroup)
+
+As you can see, this sprite has similar properties to the background and scoreLabel. The x and y coordinates put it at the middle of the left side of the window, and the fgroup makes sure it won't be drawn until after the background. Next, I want to be able to keep track of the player's motion. To do so, I'm going to add a motion property to the playerSprite:
+
+playerSprite.motion = 0
+
+I initially set it to zero because I don't want it to be moving yet when the game starts. There are only two variables left that I want to create before I start writing the logic that governs the game play. I want to be able to keep track of all the bads and all the bullets that are currently active, so I will create two lists. Since there won't be any active bads or bullets when the game begins, both lists will start out empty:
+
+activeBads = []
+activeBullets = []
+
+Excellent! I have all of the variables that my game needs. Next, I'll start defining the functions that will actually make my game work. The first function I want to declare will be the function for moving the player's ship. Since my game is very simple, the ship will only move up and down. The function will be called 120 times per second, so it will only move the ship a tiny bit at a time:
+
+def movePlayer():
+ if playerSprite.y < 0:
+  playerSprite.y = 0
+ elif playerSprite.y > 500:
+  playerSprite.y = 500
+ playerSprite.y += playerSprite.motion
+
+The most important line of this function is the last line. Here, I add the playerSprite's motion to the y. This means that if the playerSprite's motion property contains a positive value, the sprite will move up. If motion is negative, the sprite moves down. If motion is zero, the sprite stays put.
+
+The first line is an if statement that checks to see whether playerSprite's y property is less than zero. If it is, I set the y to zero. This means that anytime the playerSprite is below the bottom edge of the window, I move it back to the bottom edge. That keeps the ship in sight.
+
+Similarly, the elif statement in the middle moves the ship back down into the window if it's too high. 
+
+One function down! The next thing I want to do is start adding bads so that the player will have something to shoot. To do this, I create a function called addBad:
+
+def addBad():
+ newBad = Spr(img=badImages[randint(0,4)],x=500, y=randint(50,450), batch = batchDraw, group=fgroup))
+ newBad.xmotion = -0.1 - random()
+ newBad.ymotion = random() * 3 - 1.5
+ activeBads.append(newBad)
+
+A lot of the first line should look familiar. I'm declaring a variable called newBad, and assigning it a pyglet sprite. The image will be randomly chosen from the list of badImages. Recall that in Python, we can access items in a list by typing the name of the list, followed by square brackets containing the integer that corresponds to the item we want. That integer is called the index. In Python, indexes start with zero, so when we have a list that contains five items, the indexes will be 0, 1, 2, 3, and 4. I choose one of those indexes at random using the randint function. 
+
+I set x to 500 so that each bad will first appear at the edge of the window on the right. I use randint again to randomly set the y property to an integer from 50 to 450. The next two lines create new properties of xmotion and ymotion for the newBad. I use random values for these since I think it will be more interesting for the player if each bad has a unique movement pattern. The playerSprite only needed a "motion" property because it only moves up and down, but the bads move diagonally, so they need two properties. 
+
+Last, but not least, I add the newBad to the list of activeBads using the activeBads list's "append" method. A method is a function, but unlike other functions it belongs to some other variable. That means that to use a method we must type the name of the variable first, then a dot, then the name of the method. In Python, every list has an "append" method, along with many other useful methods found at docs.python.org/3/........................
+
+Now that I have a function for adding bads to the game, I also should have a function for moving them. Like the move player function, this function will be called 120 times per second, and so we need to move each bad just a little bit each time. Unlike the last two functions, this function will take one parameter, "bad":
+
+def moveBad(bad):
+ bad.x += bad.xmotion
+ bad.y += bad.ymotion
+ if bad.y > (500 - bad.height):
+  bad.ymotion = -1.5 * random()
+ elif bad.y < 0:
+  bad.ymotion = 1.5 * random()
+ if bad.x < 0: 
+  gameOver()
+
+The first two 
