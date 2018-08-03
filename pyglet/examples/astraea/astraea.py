@@ -84,13 +84,13 @@ LIFE_LOST_DELAY = 2.
 FONT_NAME = ('Verdana', 'Helvetica', 'Arial')
 
 INSTRUCTIONS = \
-'''Your ship is lost in a peculiar unchartered area of space-time infested with asteroids!  You have no chance for survival except to rack up the highest score possible.
+'''Your ship is lost in a peculiar uncharted region of space-time--and it's infested with asteroids!  Your only chance to survive is to rack up the highest score possible.
 
 Left/Right: Turn ship
 Up: Thrusters
 Space: Shoot
 
-Be careful, there's not much friction in space.'''
+Be careful! There's not much friction in space...'''
 
 def center_anchor(img):
     img.anchor_x = img.width // 2
@@ -720,6 +720,7 @@ def on_key_press(symbol, modifiers):
 
 @win.event
 def on_draw():
+    win.clear()
     glColor3f(1, 1, 1)
 
     # Render

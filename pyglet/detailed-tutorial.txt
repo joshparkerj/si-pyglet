@@ -4,13 +4,15 @@ Title: Creating a game with Python and the pyglet library.
 
 Purpose: This lesson will demonstrate how to use the pyglet library to easily add images and sound to a Python program, as well as creating a game by using keyboard inputs to control a player sprite.
 
-Audience: This lesson is intended for third year UVU Prep students in the computer science class. Students are assumed to already be familiar with Scratch and to have learned some of the basics of Python programming. This lesson would probably work best after students have already worked with Python's turtle library. Specifically, I think this lesson could be a good alternative to the tkinter flow-chart lesson from UVU Prep 2018.
+Audience: This lesson is intended for third year UVU Prep students in the computer science class. Students are assumed to already be familiar with Scratch and to have learned some of the basics of Python programming. This lesson would probably work best after students have already worked with Python's turtle library. Specifically, I think this lesson could be used as an alternative to the tkinter flow-chart lesson from UVU Prep 2018.
 
-Set-up: This lesson requires the pyglet library. This library is available through pip, so if pip is installed, then pyglet can be installed by running the command "pip install pyglet" at the command line. If that doesn't work, the library can also easily be used by downloading it from ......................
+Set-up: This lesson requires the pyglet library. This library is available through pip, so if pip is installed, then pyglet can be installed by running the command "pip install pyglet" at the command line. If that doesn't work, the library can also easily be used by downloading it from bitbucket.org/pyglet/pyglet/downloads, in which case the python file containing the game will need to be saved in the pyglet directory. 
 
-Resources: A simple, completed game can be found at ........................ All of the game assets were obtained from opengameart and edited using Gimp for the graphics and Audacity for the sounds. 
+Resources: A simple, completed game similar to Space Invaders can be found at github.com/joshparkerj/si-pyglet. The actual game code is at github.com/joshparkerj/si-pyglet/blob/master/pyglet/si.py. All of the game assets were obtained from opengameart.org and edited using Gimp for the graphics and Audacity for the sounds. The asset credits are at github.com/joshparkerj/si-pyglet/blob/master/pyglet/asset-credits.txt.
 
-Tutorial: Since we are using the pyglet library we will need to import it at the top of our file:
+Exhaustive Tutorial: I expect that students who are familiar with Scratch and who have been learning Python will be able to pick up most pyglet concepts, but there will probably be questions that I can't anticipate. In the rest of this document, I attempt to provide many useful answers by presenting a detailed, gentle tutorial intended for an audience with little Python experience. The tutorial is unfortunately much too long to present in class, but hopefully it will be useful for the teacher and/or TAs to help answer student questions. 
+
+Since we are using the pyglet library we will need to import it at the top of our file:
  
 import pyglet
 
@@ -24,11 +26,11 @@ Next, I set up two global variables to keep track of important information. The 
 playerScore = 0
 gameOn = True
 
-Okay! Now that some easy stuff is out of the way, let's start using the pyglet library. The first thing I did was open a square window 500 pixels wide by 500 pixels tall (because that's the size of my background image). To use parts of the pyglet library, we will type pyglet.something.somethingelse. Detailed nformation about what those somethings and somethingelses can be is found at pyglet.readthedocs.io:
+Okay! Now that some easy stuff is out of the way, let's start using the pyglet library. The first thing I did was open a square window 500 pixels wide by 500 pixels tall (because that's the size of my background image). To use parts of the pyglet library, we will type pyglet.something.somethingelse. Detailed information about what those somethings and somethingelses can be is found at pyglet.readthedocs.io. Some information is also available if you run the command "help(pyglet)" in Python. Here's the declaration of the window:
 
 window = pyglet.window.Window(500,500)
 
-Next, I set up a variable for a graphics batch. In Pyglet, we are supposed to assign all of the sprites that we want drawn on the screen at once to the same graphics batch:
+Next, I set up a variable for a graphics batch. In Pyglet, we are supposed to assign all of the sprites that we want drawn on the screen at once to the same graphics batch. :
 
 batchDraw = pyglet.graphics.Batch()
 
@@ -124,7 +126,17 @@ The first line is an if statement that checks to see whether playerSprite's y pr
 
 Similarly, the elif statement in the middle moves the ship back down into the window if it's too high. 
 
-One function down! The next thing I want to do is start adding bads so that the player will have something to shoot. To do this, I create a function called addBad:
+One function down! The player also will need to be able to shoot bullets. I'll create that function next:
+
+def shootBullet():
+ bullet = Spr(img=bulletImage, x=playerSprite.x, y=playerSprite.y, batch=batchDraw, group=fgroup)
+ bullet.motion = 20
+ activeBullets.append(bullet)
+ zapSound.play()
+
+In this function, the first thing I did was create a variable called bullet that will contain a pyglet sprite. The img, batch, and group properties have already been discussed. For the x and y properties, I put the bullet in exactly the same place where the player's ship is. This helps create the illusion that the bullet is actually being fired from the player's ship. Then, I give the bullet a motion property with a value of twenty. This will cause the bullet to jump twenty pixels to the right every time I call it's movement function, which I will do 120 times per second. I'll discuss what "append" means after the next function, which will be similar. Last but not least, I play the zapSound.
+
+The next thing I want to do is start adding bads so that the player will have something to shoot. To do this, I create a function called addBad:
 
 def addBad():
  newBad = Spr(img=badImages[randint(0,4)],x=500, y=randint(50,450), batch = batchDraw, group=fgroup))
@@ -136,7 +148,7 @@ A lot of the first line should look familiar. I'm declaring a variable called ne
 
 I set x to 500 so that each bad will first appear at the edge of the window on the right. I use randint again to randomly set the y property to an integer from 50 to 450. The next two lines create new properties of xmotion and ymotion for the newBad. I use random values for these since I think it will be more interesting for the player if each bad has a unique movement pattern. The playerSprite only needed a "motion" property because it only moves up and down, but the bads move diagonally, so they need two properties. 
 
-Last, but not least, I add the newBad to the list of activeBads using the activeBads list's "append" method. A method is a function, but unlike other functions it belongs to some other variable. That means that to use a method we must type the name of the variable first, then a dot, then the name of the method. In Python, every list has an "append" method, along with many other useful methods found at docs.python.org/3/........................
+Last, but not least, I add the newBad to the list of activeBads using the activeBads list's "append" method. A method is a function, but unlike other functions it belongs to some other variable. That means that to use a method we must type the name of the variable first, then a dot, then the name of the method. In Python, every list has an "append" method, along with many other useful methods found at docs.python.org/3/tutorial/datastructures.html, or by running the command "help(list)" in Python.
 
 Now that I have a function for adding bads to the game, I also should have a function for moving them. Like the move player function, this function will be called 120 times per second, and so we need to move each bad just a little bit each time. Unlike the last two functions, this function will take one parameter, "bad":
 
@@ -150,4 +162,113 @@ def moveBad(bad):
  if bad.x < 0: 
   gameOver()
 
-The first two 
+The first two lines actually move the bad, the same way I moved the playerSprite earlier, except the bad moves in two dimensions. When moving the bad, I also need to make sure it doesn't leave the window, so that's what the rest of the function is about. Recall that the bad's y coordinate is located at the bottom left corner of its image. That's why the first if statement compares the bad's y to a point the height of the bad below the top edge of the window. Both the if and the elif change the bad's ymotion so that it moves away from the edge.
+
+On the last line of the moveBad function, I check to see whether the bad has reached the left edge of the window. If it has, I call the gameOver function, so I'd better define that function next:
+
+def gameOver():
+ global gameOn
+ gameOn = False
+ scoreLabel.width = 500
+ scoreLabel.multiline = True
+ scoreLabel.text = "GAME OVER You scored: " + str(playerScore)
+ scoreLabel.x = 0
+ scoreLabel.y = 300
+ scoreLabel.font_size = 55
+
+On the first two lines I set the global variable gameOn to False, indicating that the game has ended. Next I want to display a message to the player, informing them of their final score. Since I already have a scoreLabel defined, I'll modify its properties to transform it into the game over message. Because I want the message to be displayed on two lines, I first set the width property to the width of the window so that the entire message will be visible. Then I set the multiline property to True so that the message will wrap to fit in the window. The rest of these properties are straightforward.
+
+The next function is called killBad. I use it to kill any bad that gets hit by a bullet. This function is a little more complicated than the others. There are two for loops. The first loops through all of the active bullets. Then, for each bullet I loop through all of the bads. That way, I can be sure to check all of the possible combinations of bullets and bads:
+
+def killBad()
+ for i in range(len(activeBullets)):
+  for j in range(len(activeBads)):
+
+The len function gives me the length of the list, and the range function lets me loop through all of the list indexes. Now that I am in the inner for loop, I need to check to see whether any bullet is hitting any bad:
+
+   if (activeBullets[i].x > activeBads[j].x - 20
+    and activeBullets[i].x < activeBads[j].x + activeBads[j].image.width + 20
+    and activeBullets[i].y > activeBads[j].y
+    and activeBullets[i].y < activeBads[j].y + activeBads[j].image.height):
+
+As you can see, this is a relatively complicated if statement, so I've broken it up onto several lines. There are four conditions, and all four have to be true in order for me to kill a bad. In every case, I am making a comparison between the x or y property of the bullet, and the corresponding property of the bad. Recall that in Python, we access items in a list by typing the name of the list, then an integer in square brackets. The "i" variable is a stand in for the integer that indexes each bullet, and the "j" variable is a stand in for the integer that indexes each bad. 
+
+The first condition is that the bullet's x property be greater than the bad's x property minus twenty. Why minus twenty? My bullets will be moving across the screen at twenty pixels per frame. At that rate, a bullet could easily jump right over a bad without hitting it, and the player would be frustrated. I avoid this problem by saying that if the bullet is within twenty pixels in front of the bad, it counts as a hit.
+Next, I check to see whether the bullet's x property is less than the bad's x property plus the width of the bad's image plus twenty. If the bullet's x property is higher than that, it means the bullet is well behind the bad and it shouldn't count as a hit. I similarly compare the y values, but this time I don't need to add or subtract twenty since the bullet doesn't have any motion in the y dimension.
+
+If all four conditions in my if statement are met, then it's time to kill the bad! Here's how:
+
+    del activeBads[j]
+    del activeBullets[i]
+    global playerScore
+    playerScore += 1
+    scoreLabel.text = "Score: " + str(playerScore)
+    blastSound.play()
+    return
+
+My first concern is to get rid of the dead bad and the bullet that killed it. I do this using the del keyword, which stands for delete. Then, I update the global playerScore variable, and update the text of the scoreLabel to reflect the new score. I also play the blastSound, and then use the return statement to end the function.
+
+My next function will tie together most of the functions that I've defined so far. Several of my functions will need to be called 120 times per second, and so I will define a function to do that. Since it's mostly concerned with moving the various sprites, I'll call it moveThings. When pyglet calls this function, it will pass it one argument, which by convention is called dt. I don't actually use it, but it still needs to be there. In addition to moving things already in the game, I'll also use this function to add bads; the higher the player's score, the more bads will be added:
+
+def moveThings(dt):
+ movePlayer()
+ killBad()
+ if len(activeBads) <= playerScore/10:
+  addBad()
+ for bad in activeBads:
+  moveBad(bad)
+ for i in range(len(activeBullets)):
+  activeBullets[i].x += activeBullets[i].motion
+  if activeBullets[i].x > 500:
+   del activeBullets[i]
+   break
+
+Every time moveThings is called, I have it call movePlayer and killBad once each. Then, if the player's score is more than ten times the number of activeBads I add another bad. I then call moveBad once for each active bad. Finally, I move the bullets. I could have created a separate function for moving the bullets, but that would have made it slightly trickier to delete the bullets when they leave the window. The break keyword at the end of the function stops the loop when a bullet is deleted. If I didn't do that, Python would attempt to loop over a bullet that no longer exists, causing an error.
+
+The next four functions that I'm going to declare will be event handlers. Event handlers are the functions that make your game actually respond to user input, so they are very important. My game needs event handlers for when the user presses a key on the keyboard or stops pressing a key on the keyboard, and also for when the window is drawn or closed.
+
+When using pyglet, we create event handler functions by putting "@window.event" before the function declaration. The variable we declared at the beginning for the window was called "window" and it has a method called "event". In Python, the @ symbol at the beginning of the line indicates a decorator, which really means that we call a function on another function when it is declared. In this case, we are calling the window.event function in order to transform our functions into event handler functions. I hope that's not too confusing, because the way we use it is very simple. Let's start with the easiest event handler, the on_draw event:
+
+@window.event
+def on_draw():
+ batchDraw.draw()
+
+That's all we need. We start with the event handler decoration, then declare the function. All it needs to do is call the draw method of our batchDraw variable, which draws all of the graphics in our game.
+
+The second event handler is also very simple. All it does is stop the music when the window is closed:
+
+@window.event
+def on_close():
+ musicPlayer.pause()
+
+The last two event handlers are more interesting. They're the ones that allow the player to move the ship and fire bullets using the keyboard. First, we'll need the on_key_press event handler which is called everytime a key is pressed on the keyboard. It takes two arguments. I'll only be using the first one, which is the symbol that corresponds to whichever key was pressed:
+
+@window.event
+def on_key_press(symbol, modifiers):
+ if gameOn:
+  if symbol == kb.W:
+   playerSprite.motion = 3
+  elif symbol == kb.S:
+   playerSprite.motion = -3
+  elif symbol == kb.F:
+   shootBullet()
+
+My game only uses three keys. Pressing W makes the ship move towards the top of the window; S makes it move towards the bottom. F shoots.
+
+The other thing I want the ship to do is stop moving when the player stops pressing the key. Here's the event handler for that:
+
+@window.event
+def on_key_release(symbol, modifiers):
+ if (symbol == kb.W and playerSprite.motion == 3
+  or symbol == kb.S and playerSprite.motion == -3):
+  playerSprite.motion = 0
+
+The if statement there was used to check which key was released. If the player stopped pressing W, and the ship was moving up, we stop the ship. We also stop the ship if the player stops pressing S and the ship was moving down.
+
+There are no more functions to declare! The game is nearly complete. There are just three more lines of Python needed to start the game:
+
+pyglet.clock.schedule_interval(moveThings, 1/120.0)
+musicPlayer.play()
+pyglet.app.run()
+
+The first line there uses pyglet's clock to schedule the moveThings function to be called at intervals of 1/120th of a second. Then we just hit play on the musicPlayer and hit run on the pyglet app. Now the game is ready to play!

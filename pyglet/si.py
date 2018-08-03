@@ -1,4 +1,5 @@
 import pyglet
+
 from random import random
 from random import randint
 
@@ -55,6 +56,12 @@ def movePlayer():
   playerSprite.y = 500
  playerSprite.y += playerSprite.motion
 
+def shootBullet():
+ bullet = Spr(img=bulletImage, x=playerSprite.x, y=playerSprite.y, batch=batchDraw, group=fgroup)
+ bullet.motion = 20
+ activeBullets.append(bullet)
+ zapSound.play()
+
 def addBad():
  newBad = Spr(img=badImages[randint(0,4)], x=500, y=randint(50,450), batch = batchDraw, group = fgroup)
  newBad.xmotion = -0.1 - random()
@@ -73,71 +80,65 @@ def moveBad(bad):
 
 def gameOver():
  global gameOn
- scoreLabel.width=400
+ gameOn = False
+ scoreLabel.width=500
  scoreLabel.multiline = True
  scoreLabel.text = "GAME OVER You scored: " + str(playerScore)
- scoreLabel.x = 100
+ scoreLabel.x = 0
  scoreLabel.y = 300
- scoreLabel.font_size = 40
- gameOn = False
+ scoreLabel.font_size = 55
 
-def checkKills():
+def killBad():
+ for i in range(len(activeBullets)):
+  for j in range(len(activeBads)):
+   if (activeBullets[i].x > activeBads[j].x - 20
+    and activeBullets[i].x < activeBads[j].x + activeBads[j].image.width + 20
+    and activeBullets[i].y > activeBads[j].y
+    and activeBullets[i].y < activeBads[j].y + activeBads[j].image.height):
+    del activeBads[j]
+    del activeBullets[i]
     global playerScore
-    for i in range(len(activeBullets)):
-        for j in range(len(activeBads)):
-            if (activeBullets[i].x > activeBads[j].x - 20
-                and activeBullets[i].x < activeBads[j].x + activeBads[j].image.width + 20
-                and activeBullets[i].y > activeBads[j].y
-                and activeBullets[i].y < activeBads[j].y + activeBads[j].image.height):
-                activeBads[j].delete()
-                del activeBads[j]
-                activeBullets[i].delete()
-                del activeBullets[i]
-                playerScore += 1
-                scoreLabel.text="Score: " + str(playerScore)
-                blastSound.play()
-                return
+    playerScore += 1
+    scoreLabel.text = "Score: " + str(playerScore)
+    blastSound.play()
+    return
 
 def moveThings(dt):
-    movePlayer()
-    checkKills()
-    if len(activeBads) <= playerScore/10:
-        addBad()
-    for bad in activeBads:
-        moveBad(bad)
-    for i in range(len(activeBullets)):
-        activeBullets[i].x += activeBullets[i].motion
-        if activeBullets[i].x > 500:
-            activeBullets[i].delete()
-            del activeBullets[i]
-            break
-
-@window.event
-def on_key_press(symbol, modifiers):
-    if gameOn:
-        if symbol == kb.W:
-            playerSprite.motion = 3
-        elif symbol == kb.S:
-            playerSprite.motion = -3
-        elif symbol == kb.F:
-            b = Spr(img=bulletImage, x=playerSprite.x, y=playerSprite.y, batch=batchDraw, group=fgroup)
-            b.motion = 20
-            activeBullets.append(b)
-            zapSound.play()
-
-@window.event
-def on_key_release(symbol, modifiers):
-    if (symbol == kb.W and playerSprite.motion == 3
-        or symbol == kb.S and playerSprite.motion == -3):
-        playerSprite.motion = 0
+ movePlayer()
+ killBad()
+ if len(activeBads) <= playerScore/10:
+  addBad()
+ for bad in activeBads:
+  moveBad(bad)
+ for i in range(len(activeBullets)):
+  activeBullets[i].x += activeBullets[i].motion
+  if activeBullets[i].x > 500:
+   del activeBullets[i]
+   break
 
 @window.event
 def on_draw():
-    batchDraw.draw()
+ batchDraw.draw()
 
 @window.event
 def on_close():
-    musicPlayer.pause()
+ musicPlayer.pause()
+
+@window.event
+def on_key_press(symbol, modifiers):
+ if gameOn:
+  if symbol == kb.W:
+   playerSprite.motion = 3
+  elif symbol == kb.S:
+   playerSprite.motion = -3
+  elif symbol == kb.F:
+   shootBullet()
+
+@window.event
+def on_key_release(symbol, modifiers):
+ if (symbol == kb.W and playerSprite.motion == 3
+  or symbol == kb.S and playerSprite.motion == -3):
+  playerSprite.motion = 0
 
 pyglet.clock.schedule_interval(moveThings, 1/120.0)
 musicPlayer.play()
