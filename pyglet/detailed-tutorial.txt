@@ -8,6 +8,8 @@ Audience: This lesson is intended for third year UVU Prep students in the comput
 
 Set-up: This lesson requires the pyglet library. This library is available through pip, so if pip is installed, then pyglet can be installed by running the command "pip install pyglet" at the command line. If that doesn't work, the library can also easily be used by downloading it from bitbucket.org/pyglet/pyglet/downloads, in which case the python file containing the game will need to be saved in the pyglet directory. 
 
+
+
 Resources: A simple, completed game similar to Space Invaders can be found at github.com/joshparkerj/si-pyglet. The actual game code is at github.com/joshparkerj/si-pyglet/blob/master/pyglet/si.py. All of the game assets were obtained from opengameart.org and edited using Gimp for the graphics and Audacity for the sounds. The asset credits are at github.com/joshparkerj/si-pyglet/blob/master/pyglet/asset-credits.txt.
 
 Exhaustive Tutorial: I expect that students who are familiar with Scratch and who have been learning Python will be able to pick up most pyglet concepts, but there will probably be questions that I can't anticipate. In the rest of this document, I attempt to provide many useful answers by presenting a detailed, gentle tutorial intended for an audience with little Python experience. The tutorial is unfortunately much too long to present in class, but hopefully it will be useful for the teacher and/or TAs to help answer student questions. 

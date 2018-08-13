@@ -18,22 +18,12 @@ img = pyglet.resource.image
 playerImage = img('player.png')
 spaceImage = img('space.png')
 bulletImage = img('bullet.png')
-badImages = [img('bad1.png'),img('bad2.png'),img('bad3.png'),img('bad4.png'),img('bad5.png'),]
-
-med = pyglet.resource.media
-
-zapSound = med('zap.wav', streaming=False)
-blastSound = med('blast.wav', streaming=False)
-
-spaceMusic = med('space.wav')
-
-scoreLabel = pyglet.text.Label(text="Score: " + str(playerScore), x=5, y=485, batch=batchDraw, group=fgroup)
-
-musicPlayer = pyglet.media.Player()
-musicPlayer.queue(spaceMusic)
-
-kb = pyglet.window.key
-
+badImages = [
+ img('bad1.png'),
+ img('bad2.png'),
+ img('bad3.png'),
+ img('bad4.png'),
+ img('bad5.png')]
 
 Spr = pyglet.sprite.Sprite
 
@@ -49,6 +39,27 @@ playerSprite.motion = 0
 activeBads = []
 activeBullets = []
 
+scoreLabel = pyglet.text.Label(
+ text="Score: " + str(playerScore), 
+ x=5, 
+ y=485, 
+ batch=batchDraw, 
+ group=fgroup)
+
+med = pyglet.resource.media
+
+zapSound = med('zap.wav', streaming=False)
+blastSound = med('blast.wav', streaming=False)
+
+spaceMusic = med('space.wav')
+
+musicPlayer = pyglet.media.Player()
+musicPlayer.queue(spaceMusic)
+
+
+
+kb = pyglet.window.key
+
 def movePlayer():
  if playerSprite.y < 0:
   playerSprite.y = 0
@@ -57,13 +68,23 @@ def movePlayer():
  playerSprite.y += playerSprite.motion
 
 def shootBullet():
- bullet = Spr(img=bulletImage, x=playerSprite.x, y=playerSprite.y, batch=batchDraw, group=fgroup)
+ bullet = Spr(
+  img=bulletImage, 
+  x=playerSprite.x, 
+  y=playerSprite.y, 
+  batch=batchDraw, 
+  group=fgroup)
  bullet.motion = 20
  activeBullets.append(bullet)
  zapSound.play()
 
 def addBad():
- newBad = Spr(img=badImages[randint(0,4)], x=500, y=randint(50,450), batch = batchDraw, group = fgroup)
+ newBad = Spr(
+  img=badImages[randint(0,4)], 
+  x=500, 
+  y=randint(50,450), 
+  batch = batchDraw, 
+  group = fgroup)
  newBad.xmotion = -0.1 - random()
  newBad.ymotion = random() * 3 - 1.5
  activeBads.append(newBad)
